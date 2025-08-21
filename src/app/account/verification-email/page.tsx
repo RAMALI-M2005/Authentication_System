@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,81 +8,84 @@ import { toast } from "sonner";
 
 export default function EmailVerification() {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email");
-  const codeparam = searchParams.get("code");
-
-  const [userEmail, setUserEmail] = useState(email || "");
-  const [step, setStep] = useState<"send" | "verify">("send");
-  const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState(codeparam || "");
   const nav = useRouter();
 
-  // 👉 Run side-effects safely
-useEffect(() => {
-  if (!userEmail) {
-    toast.info("Enter your email.", { description: "to get the verification code." });
-  }
-}, []);
+  const emailParam = searchParams.get("email");
+  const codeParam = searchParams.get("code");
+  const stepParam = searchParams.get("step");
+  const which = stepParam ? "verify"  : codeParam ? "verify"  : "send";
 
+  const [userEmail, setUserEmail] = useState(emailParam || "");
+  const [step, setStep] = useState<"send" | "verify">(which);
+  const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState(codeParam || "");
 
+  // Inform user if email is missing
   useEffect(() => {
-    if (codeparam) {
-      setStep("verify");
+    if (!userEmail && step === "send") {
+      toast.info("Enter your email.", { description: "to get the verification code." });
     }
-  }, [codeparam]);
+  }, [userEmail, step]);
 
+  // 👉 Handle sending the verification code
   const handleSendCode = async () => {
-    setLoading(true);
     if (!userEmail) {
-      toast.error("email is required");
-      setLoading(false);
+      toast.error("Email is required");
       return;
     }
+
+    setLoading(true);
     try {
       const res = await fetch(`/api/emails/send-verification`, {
         method: "POST",
         body: JSON.stringify({ email: userEmail }),
       });
-
       const data = await res.json();
+
       if (data.success) {
-        toast.success(data.message, {
-          description: data.desc,
-        });
-        setUserEmail(data.email)
+        toast.success(data.message, { description: data.desc });
+
+        // Persist the step in URL to ensure reload works
+        nav.replace(
+          `/account/verification-email?email=${encodeURIComponent(userEmail)}&code=${encodeURIComponent(data.code || "")}&step=${encodeURIComponent("verify")}`
+        );
+
         setStep("verify");
+        setCode(data.code || "");
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Something went wrong");
       }
     } catch (err) {
-      toast.error("Something went wrong while sending the code: " + err, {
-        description: "try again",
-      });
+      toast.error("Something went wrong while sending the code: " + err, { description: "Try again" });
     } finally {
       setLoading(false);
     }
   };
 
+  // 👉 Handle verifying the code
   const handleVerifyCode = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch(`/api/emails/verify-code`, {
-      method: "POST",
-      body: JSON.stringify({ email: userEmail, code }), // <- use 'to' to match server
-    });
-    const data = await res.json();
-    if (data.success) {
-      toast.success(data.message);
-      nav.push("/dashboard");
-    } else {
-      toast.error(data.message || "Invalid verification code", { description: "try again" });
+    if (code.length !== 6) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/emails/verify-code`, {
+        method: "POST",
+        body: JSON.stringify({ email: userEmail, code }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        nav.push("/dashboard"); // redirect to dashboard
+      } else {
+        toast.error(data.message || "Invalid verification code", { description: "Try again" });
+      }
+    } catch (err) {
+      toast.error("Something went wrong while verifying the code");
+    } finally {
+      setLoading(false);
     }
-  } catch {
-    toast.error("Something went wrong while verifying the code");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -93,12 +97,13 @@ useEffect(() => {
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-center">
               We will send a 6-digit verification code to:
-              <Input
-                className="font-semibold"
-                onChange={(e) => setUserEmail(e.target.value)}
-                value={userEmail}
-              />
             </p>
+            <Input
+              className="font-semibold text-center"
+              onChange={(e) => setUserEmail(e.target.value)}
+              value={userEmail}
+              placeholder="you@example.com"
+            />
             <Button className="w-full" onClick={handleSendCode} disabled={loading}>
               {loading ? "Sending..." : "Send Verification Code"}
             </Button>
@@ -111,8 +116,7 @@ useEffect(() => {
               Enter verification code
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-center">
-              We sent a 6-digit code to:{" "}
-              <span className="font-semibold">{email}</span>
+              We sent a 6-digit code to: <span className="font-semibold">{userEmail}</span>
             </p>
             <Input
               type="text"
