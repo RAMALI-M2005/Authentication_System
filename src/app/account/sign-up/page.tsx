@@ -37,14 +37,15 @@ export default function SignUpPage() {
     setLoading(true)
     try {
       const res = await signUp({ name: username, email, password })
-      
 
-      if (res?.message) {
-        setUsername('')
-        setEmail('')
-        setPassword('')
-        toast.success(res?.message || 'User created successfully')
-        nav.push("/dashboard");
+      if (res?.status) {
+        toast.success(res?.message,{
+          description:res?.desc
+        })
+       nav.push(`/account/verification-email?email=${encodeURIComponent(String(res.email))}`);
+
+      }else{
+        toast.error(res.message || "Sign up failed.")
       }
     } catch {
       setMessage('Sign up failed.')
@@ -54,7 +55,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <main className="flex items-center flex-col justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Card className="w-full max-w-md shadow-xl rounded-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
@@ -137,6 +138,7 @@ export default function SignUpPage() {
           </form>
         </CardContent>
       </Card>
+
     </main>
   )
 }

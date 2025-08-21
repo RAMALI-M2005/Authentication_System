@@ -7,6 +7,14 @@ export interface WorkspaceRef {
   role: Role;
 }
 
+export type Verificaion = {
+       isVerified:boolean,
+       code:{
+        hex:string,
+        expires:number
+       }
+}
+
 export interface IUser extends Document {
   _id: Types.ObjectId;
   name: string;
@@ -18,6 +26,7 @@ export interface IUser extends Document {
   avatarURL?: string;
   workspaces: WorkspaceRef[];
   sessionId?: string | null;
+  verification:Verificaion
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,3 +45,13 @@ export type Cookies = {
   get: (key: string) => { name: string; value: string } | undefined;
   delete: (key: string) => void;
 };
+
+export interface AppUser {
+  _id: string;
+  name: string;
+  firstname?:string;
+  lastname?:string;
+  email: string;
+  avatarURL?: string
+  workspaces?: WorkspaceRef[]
+}

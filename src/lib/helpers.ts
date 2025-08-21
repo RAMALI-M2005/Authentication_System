@@ -6,21 +6,25 @@ export const generateSalt = (length = 16) => {
 };
 
 // 2️⃣ Hash a password with a given salt
-export const hashpassword = (password: string, salt: string) => {
+export const hashPassword = (password: string, salt: string) => {
   const hashed = crypto.pbkdf2Sync(password, salt, 10000, 64, "sha512");
   return hashed.toString("hex");
 };
 
 // 3️⃣ Compare a plain password with a hashed one
-export const comparePasswords = (
+export const comparePasswords =  (
   password: string,
   hashedPassword: string,
   salt: string
 ) => {
-  const hashedAttempt = Buffer.from(hashpassword(password, salt), "hex");
+  const hashedAttempt = Buffer.from(hashPassword(password, salt), "hex");
   const hashedBuffer = Buffer.from(hashedPassword, "hex");
 
   // Use timingSafeEqual for constant-time comparison
   if (hashedAttempt.length !== hashedBuffer.length) return false;
   return crypto.timingSafeEqual(hashedAttempt, hashedBuffer);
 };
+
+export const createVerificationCode = ()=>{
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}

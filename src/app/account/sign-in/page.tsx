@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent} from "react";
 import { signIn } from "@/lib/actions";
 import GoogleButton from "@/components/auth/google-button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -50,16 +50,26 @@ export default function SignInPage() {
     try {
       const res = await signIn({ email, password });
 
-      if (res && res.message) {
-        setSuccess(res.message);
-        toast.success(res.message)
+      if (res.status) {
+        setSuccess(res.message || "User signed in successfully");
+        toast.success(res.message);
         setEmail("");
         setPassword("");
-        nav.push("/dashboard")
-        
+        nav.push("/dashboard");
       } else {
         setError(res.error || "Sign in failed.");
-        toast.error(res.error ||  "Sign in failed.")
+        if (res.verificate) toast.error(res.error || "Sign in failed.", {
+          duration:3000,
+          description:res.desc,
+            action: (
+            <Link href={`/account/verification-email?email=${encodeURIComponent(email)}`}>
+              <Button className="cursor-pointer p-1" variant="outline" size="sm">
+                verify your email
+              </Button>
+            </Link>
+          ),
+        });
+        else toast.error(res.error || "Sign in failed.");
       }
     } catch {
       setError("Sign in failed.");
@@ -69,7 +79,7 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <main className="flex items-center flex-col justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Card className="w-full max-w-md shadow-xl rounded-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
@@ -81,7 +91,6 @@ export default function SignInPage() {
         </CardHeader>
 
         <CardContent>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <GoogleButton label="Sign in with Google" />
 

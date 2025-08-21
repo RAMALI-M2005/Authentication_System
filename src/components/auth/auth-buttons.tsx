@@ -80,12 +80,14 @@ export default function AuthButtons({ user }: Props) {
         wordBreak: "break-all",
     };
 
-    function initials(name: string) {
-        const parts = name.trim().split(/\s+/);
-        const i1 = parts[0]?.[0] ?? "";
-        const i2 = parts[1]?.[0] ?? "";
-        return (i1 + i2).toUpperCase();
-    }
+function initials(name?: string) {
+    if (!name) return "U"; // fallback letter if no name
+    const parts = name.trim().split(/\s+/);
+    const i1 = parts[0]?.[0] ?? "";
+    const i2 = parts[1]?.[0] ?? "";
+    return (i1 + i2).toUpperCase() || "U";
+}
+
 
     // Drawer state + outside click handling
     const [open, setOpen] = useState(false);

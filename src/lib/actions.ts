@@ -1,6 +1,6 @@
 "use server"
 import User from "@/models/user.model";
-import { comparePasswords, generateSalt, hashpassword } from "./helpers";
+import { comparePasswords, generateSalt, hashPassword } from "@/lib/helpers";
 import { createUserSession, removeUserFromSession } from "./auth";
 import dbConnect from "./dbConnect";
 import { cookies } from "next/headers";
@@ -11,7 +11,7 @@ export const signIn = async(data: { email: string; password: string }) => {
     const { email, password } = data;
     
     if (!email || !password) {
-        return {error:"Email and password are required"};
+        return {status:false,error:"Email and password are required",verificate:false};
     }
     
    try {
@@ -19,29 +19,31 @@ export const signIn = async(data: { email: string; password: string }) => {
     
     const  user = await User.findOne({ email });
     if (!user) {
-        return {error:"User not found"};
+        return {status:false,error:"User not found",verificate:false};
     }
     const hashedPassword = String(user.password)
     const salt = String(user.salt);
-    const isPasswordValid = await comparePasswords(password, hashedPassword, salt);
+    const isPasswordValid =  comparePasswords(password, hashedPassword, salt);
     if (!isPasswordValid) {
-        return {error :"Invalid password"};
+        return {status:false,error :"Invalid password",verificate:false};
     }
+
+    if(!user?.verification?.isVerified)    return {status:false,error:`email not verified`,desc:`${email}`,verificate:true};
 
     await createUserSession(String(user._id), await cookies());
     
-   return {message:"User signed in successfully"};
-   } catch  {
-    return {error:`Unable to sign you. Please try again later`};
+   return {status:true,message:"User signed in successfully"};
+   } catch(error)  {
+    console.log("error:",error)
+    return {status:false,error:`Unable to sign you. Please try again later`};
    }
-
 }
 
 export const signUp = async(data: { name: string; email: string; password: string }) => {
     const { name, email, password } = data;
 
     if (!name || !email || !password) {
-        return {error:"Name, email, and password are required"};
+        return {status:false,message:"Name, email, and password are required"};
     }
 
     await dbConnect();
@@ -49,11 +51,12 @@ export const signUp = async(data: { name: string; email: string; password: strin
  try {
        const existingUser = await User.findOne({ email });
     if (existingUser) {
-        return {error:"Email already in use"};
+        return {status:false,message:"Email already in use"};
     }
 
+
     const salt = generateSalt();
-    const hashedPassword = hashpassword(password, salt);
+    const hashedPassword = hashPassword(password, salt);
 
     const newUser = new User({
         name,
@@ -64,13 +67,9 @@ export const signUp = async(data: { name: string; email: string; password: strin
 
     await newUser.save();
 
-    const id = String(newUser._id);
-
-   await createUserSession(id,await cookies());
-
-    return {message:"User created successfully"};
+ return {status:true,message:"User created successfully",desc:"verify your email",email};
  } catch{
-    return {error:"Unable to create you account"};
+    return {status:false,error:"Unable to create you account"};
  }
 }
 
