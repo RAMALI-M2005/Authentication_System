@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode} from "react";
-import { useEffect } from "react";
 
 interface DashboardLayoutProps {
   children: ReactNode;

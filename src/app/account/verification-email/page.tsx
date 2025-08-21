@@ -80,7 +80,7 @@ export default function EmailVerification() {
       } else {
         toast.error(data.message || "Invalid verification code", { description: "Try again" });
       }
-    } catch (err) {
+    } catch  {
       toast.error("Something went wrong while verifying the code");
     } finally {
       setLoading(false);

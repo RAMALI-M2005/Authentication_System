@@ -35,8 +35,7 @@ export async function POST(req: Request) {
       message: "Verification code sent successfully",
       desc: "Check your email inbox",
     });
-  } catch (error: any) {
-    console.error("Email error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch{
+    return NextResponse.json({ success: false, error:"send verification code error faced: try again"}, { status: 500 });
   }
 }

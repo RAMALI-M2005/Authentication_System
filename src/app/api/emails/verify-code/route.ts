@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   await dbConnect();
 
   try {
-    const user = await await User.findOne({ email });
+    const user = await User.findOne({ email });
     if (!user)
       return new Response(JSON.stringify({ success: false, message: "User not found" }), { status: 400 });
 
@@ -31,8 +31,7 @@ export async function POST(req: NextRequest) {
 
     return new Response(JSON.stringify({ success: true, message: `Your email ${email} is verified` }), { status: 200 });
 
-  } catch (err) {
-    console.error(err);
+  } catch {
     return new Response(JSON.stringify({ success: false, message: "Something went wrong with Code verification" }), { status: 500 });
   }
 }

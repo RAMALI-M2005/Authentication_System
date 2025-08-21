@@ -18,7 +18,6 @@ export async function GET(
     return NextResponse.redirect(redirectUrl);
 
   } catch  {
-    redirectUrl.searchParams.set("flashError", "Failed to connect. Please try again.");
     return NextResponse.redirect(redirectUrl);
   }
 }

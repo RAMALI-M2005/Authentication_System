@@ -7,10 +7,8 @@ import {
   Text,
   Img,
   Hr,
-  Button,
   Section,
 } from "@react-email/components";
-import logo from "@/../public/log.svg";
 
 interface VerificationEmailProps {
   username: string;
@@ -143,7 +141,7 @@ export const WaitlistEmail = ({
 
             <Section style={{ textAlign: "center", margin: "32px 0" }}>
               <a
-                href={`http://localhost:3000/account/verification-email?email=${encodeURIComponent(String(email))}&code=${encodeURIComponent(String(code))}`}
+                href={`${process.env.NEXT_PUBLIC_ORIGIN_URL}/account/verification-email?email=${encodeURIComponent(String(email))}&code=${encodeURIComponent(String(code))}`}
                 style={{
                   display: "inline-block",
                   backgroundColor: "#164e63",

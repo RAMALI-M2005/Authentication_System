@@ -1,8 +1,8 @@
 // middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
 
-const privateRoutes = ["/dashboard", "/settings", "/profile"]; 
-const publicRoutes = ["/account", "/auth"]; 
+const privateRoutes = ["/dashboard"]; 
+const publicRoutes = ["/account"]; 
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -13,8 +13,7 @@ export async function middleware(request: NextRequest) {
   let user = null;
 
   if (sessionId) {
-    try {
-      // 👇 نعمل طلب لـ API route بدل الاتصال المباشر بالـ DB
+    //checking if the user session is valid or not
       const res = await fetch(`${request.nextUrl.origin}/api/auth/session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,9 +23,7 @@ export async function middleware(request: NextRequest) {
       if (res.ok) {
         user = await res.json();
       }
-    } catch (error) {
-      console.error("Middleware auth error:", error);
-    }
+
   }
 
   // Private routes protection
