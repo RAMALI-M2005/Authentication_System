@@ -3,17 +3,20 @@
 import {  useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function EmailVerification() {
-  const searchParams = useSearchParams();
+export default function EmailVerification({
+  emailParam,
+  codeParam,
+  which,
+}: {
+  emailParam?: string;
+  codeParam?: string;
+  which: "send" | "verify";
+}) {
   const nav = useRouter();
 
-  const emailParam = searchParams.get("email");
-  const codeParam = searchParams.get("code");
-  const stepParam = searchParams.get("step");
-  const which = stepParam ? "verify"  : codeParam ? "verify"  : "send";
 
   const [userEmail, setUserEmail] = useState(emailParam || "");
   const [step, setStep] = useState<"send" | "verify">(which);
