@@ -1,15 +1,9 @@
+// app/account/verification-email/page.tsx
+
 import EmailVerification from "@/components/verificationWrapped";
-import { Suspense } from "react";
 
-
-
-
-export default function VerificationEmailWrapper  ({ searchParams }: { searchParams: { [key: string]: string } }) {
-
-
-  return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <EmailVerification searchParams={searchParams} />
-    </Suspense>
-  );
-};
+export default function VerificationEmailWrapper({ searchParams }: { searchParams: { [key: string]: string } }) {
+  // No Suspense needed since EmailVerification is client-only and
+  // doesn’t directly call useSearchParams anymore
+  return <EmailVerification searchParams={searchParams} />;
+}
