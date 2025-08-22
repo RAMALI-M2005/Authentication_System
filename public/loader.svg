@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120" viewBox="0 0 320 120" aria-labelledby="title desc" role="img">
+    <title id="title">SyncFlow loader</title>
+    <desc id="desc">Animated loader for SyncFlow: rotating sync-arcs, moving pulse and gradient "SyncFlow" wordmark.</desc>
+
+    <defs>
+        <!-- soft shadow -->
+        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feOffset dx="0" dy="2" result="off"/>
+            <feGaussianBlur in="off" stdDeviation="3" result="blur"/>
+            <feColorMatrix in="blur" type="matrix"
+                values="0 0 0 0 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 0 0 0.25" result="shadow"/>
+            <feBlend in="shadow" in2="SourceGraphic" mode="normal"/>
+        </filter>
+
+        <!-- marker for arrowheads -->
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7b61ff"/>
+        </marker>
+
+        <!-- animated gradient for text -->
+        <linearGradient id="gText" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="50%" stop-color="#7b61ff"/>
+            <stop offset="100%" stop-color="#00d4ff"/>
+            <animate attributeName="x1" dur="2.6s" values="0%;100%;0%" repeatCount="indefinite"/>
+            <animate attributeName="x2" dur="2.6s" values="100%;200%;100%" repeatCount="indefinite"/>
+        </linearGradient>
+
+        <!-- track path for the moving orb -->
+        <path id="ringPath" d="M100,60 A36,36 0 1,1 172,60 A36,36 0 1,1 100,60" fill="none"/>
+    </defs>
+
+    <!-- background faint pulse -->
+    <g transform="translate(106,60)">
+        <circle r="42" fill="#7b61ff" opacity="0.06">
+            <animate attributeName="r" values="42;56;42" dur="2.4s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.06;0.02;0.06" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+    </g>
+
+    <!-- sync arcs group -->
+    <g transform="translate(100,60)" filter="url(#shadow)">
+        <!-- clockwise arc -->
+        <path d="M36,0 A36,36 0 0,1 -12,-34"
+                    fill="none"
+                    stroke="#00d4ff"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    stroke-dasharray="80 120"
+                    marker-end="url(#arrow)">
+            <animateTransform attributeName="transform" type="rotate" dur="3s" from="0 0 0" to="360 0 0" repeatCount="indefinite"/>
+        </path>
+
+        <!-- counter-clockwise arc -->
+        <path d="M-36,0 A36,36 0 0,1 12,34"
+                    fill="none"
+                    stroke="#7b61ff"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    stroke-dasharray="80 120"
+                    marker-end="url(#arrow)">
+            <animateTransform attributeName="transform" type="rotate" dur="3s" from="0 0 0" to="-360 0 0" repeatCount="indefinite"/>
+        </path>
+
+        <!-- moving orb following ringPath -->
+        <g>
+            <use href="#ringPath" fill="none"/>
+            <circle r="5" fill="#fff">
+                <animateMotion dur="1.6s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#ringPath"/>
+                </animateMotion>
+            </circle>
+            <!-- inner glow -->
+            <circle r="10" fill="#00d4ff" opacity="0.12">
+                <animate attributeName="opacity" dur="1.6s" values="0.12;0.02;0.12" repeatCount="indefinite"/>
+                <animate attributeName="r" dur="1.6s" values="10;6;10" repeatCount="indefinite"/>
+            </circle>
+        </g>
+    </g>
+
+    <!-- wordmark -->
+    <g transform="translate(150,74)">
+        <text x="0" y="0" font-family="Inter, Roboto, Arial, sans-serif" font-size="28" font-weight="700" fill="url(#gText)" letter-spacing="0.5">
+            SyncFlow
+        </text>
+
+        <!-- subtle underline sweep -->
+        <rect x="0" y="6" width="110" height="4" rx="2" fill="#7b61ff" opacity="0.12">
+            <animate attributeName="x" values="0;0;0" dur="1.6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.12;0.02;0.12" dur="1.6s" repeatCount="indefinite"/>
+        </rect>
+    </g>
+
+    <!-- accessibility: prefer-reduced-motion respect -->
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; -webkit-animation: none !important; }
+            animate, animateTransform, animateMotion { begin="indefinite"; }
+        }
+    </style>
+</svg>
