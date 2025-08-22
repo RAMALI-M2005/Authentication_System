@@ -6,17 +6,12 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function EmailVerification({
-  emailParam,
-  codeParam,
-  which,
-}: {
-  emailParam?: string;
-  codeParam?: string;
-  which: "send" | "verify";
-}) {
+export default function EmailVerification({ searchParams }: { searchParams: { [key: string]: string } }) {
   const nav = useRouter();
-
+   const emailParam = searchParams.email;
+  const codeParam = searchParams.code;
+  const stepParam = searchParams.step;
+  const which = stepParam ? "verify" : codeParam ? "verify" : "send";
 
   const [userEmail, setUserEmail] = useState(emailParam || "");
   const [step, setStep] = useState<"send" | "verify">(which);
