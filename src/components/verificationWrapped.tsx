@@ -1,17 +1,19 @@
 "use client";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export default function EmailVerification({ searchParams }: { searchParams: { [key: string]: string } }) {
+export default function EmailVerification() {
+  const searchParams = useSearchParams();
   const nav = useRouter();
-   const emailParam = searchParams.email;
-  const codeParam = searchParams.code;
-  const stepParam = searchParams.step;
-  const which = stepParam ? "verify" : codeParam ? "verify" : "send";
+
+  const emailParam = searchParams.get("email");
+  const codeParam = searchParams.get("code");
+  const stepParam = searchParams.get("step");
+  const which = stepParam ? "verify"  : codeParam ? "verify"  : "send";
 
   const [userEmail, setUserEmail] = useState(emailParam || "");
   const [step, setStep] = useState<"send" | "verify">(which);
@@ -135,5 +137,6 @@ export default function EmailVerification({ searchParams }: { searchParams: { [k
         )}
       </div>
     </div>
+
   );
 }
