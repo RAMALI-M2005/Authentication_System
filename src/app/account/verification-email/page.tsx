@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -88,7 +88,8 @@ export default function EmailVerification() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+<Suspense fallback={<p>loading...</p>}>
+      <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-md">
         {step === "send" && (
           <div className="flex flex-col items-center space-y-6">
@@ -137,5 +138,6 @@ export default function EmailVerification() {
         )}
       </div>
     </div>
+</Suspense>
   );
 }
