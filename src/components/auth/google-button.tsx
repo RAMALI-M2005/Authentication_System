@@ -9,7 +9,7 @@ interface SignOutButtonProps {
   label?: string;
 }
 
-export default function GoogleButton({ label = "Sign out" }: SignOutButtonProps) {
+export default function GoogleButton({ label  }: SignOutButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
@@ -38,11 +38,11 @@ export default function GoogleButton({ label = "Sign out" }: SignOutButtonProps)
       disabled={loading}
     >
       {loading ? (
-        "Signing out..."
+        "Google provider Loading..."
       ) : (
         <>
           <LogOut className="w-4 h-4" />
-          {label} with Google
+          {label}
         </>
       )}
     </Button>
